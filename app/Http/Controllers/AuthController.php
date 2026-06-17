@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use OpenApi\Attributes as OA;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -11,6 +12,51 @@ use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
+    #[OA\Post(
+        path: "/api/register",
+        tags: ["Auth"],
+        summary: "Регистрация нового пользователя",
+        operationId: "register",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ["name", "email", "password"],
+                properties: [
+                    new OA\Property(property: "name", type: "string", example: "Иван Иванов"),
+                    new OA\Property(property: "email", type: "string", format: "email", example: "ivan@example.com"),
+                    new OA\Property(property: "password", type: "string", format: "password", example: "secret123"),
+                    new OA\Property(property: "password_confirmation", type: "string", format: "password", example: "secret123"),
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 201,
+                description: "Пользователь зарегистрирован",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "success", type: "boolean", example: true),
+                        new OA\Property(property: "message", type: "string", example: "Пользователь зарегистрирован"),
+                        new OA\Property(property: "user", ref: "#/components/schemas/User"),
+                        new OA\Property(property: "token", type: "string", example: "1|abc123..."),
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 422,
+                description: "Ошибка валидации",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "success", type: "boolean", example: false),
+                        new OA\Property(property: "errors", type: "object", example: [
+                            "email" => ["The email has already been taken."],
+                            "password" => ["The password must be at least 6 characters."],
+                        ]),
+                    ]
+                )
+            ),
+        ]
+    )]
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -42,6 +88,53 @@ class AuthController extends Controller
         ], 201);
     }
 
+
+
+
+
+    #[OA\Post(
+        path: "/api/login",
+        tags: ["Auth"],
+        summary: "Вход пользователя",
+        operationId: "login",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ["email", "password"],
+                properties: [
+                    new OA\Property(property: "email", type: "string", format: "email", example: "ivan@example.com"),
+                    new OA\Property(property: "password", type: "string", format: "password", example: "secret123"),
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Успешный вход",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "success", type: "boolean", example: true),
+                        new OA\Property(property: "message", type: "string", example: "Успешный вход"),
+                        new OA\Property(property: "user", ref: "#/components/schemas/User"),
+                        new OA\Property(property: "token", type: "string", example: "1|abc123..."),
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 401,
+                description: "Неверный email или пароль",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "success", type: "boolean", example: false),
+                        new OA\Property(property: "errors", type: "object", example: [
+                            "email" => ["The email has already been taken."],
+                            "password" => ["The password must be at least 6 characters."],
+                        ]),
+                    ]
+                )
+            ),
+        ]
+    )]
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -74,6 +167,24 @@ class AuthController extends Controller
         ]);
     }
 
+    #[OA\Post(
+        path: "/api/logout",
+        tags: ["Auth"],
+        summary: "Выход пользователя",
+        operationId: "logout",
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Успешный выход",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "success", type: "boolean", example: true),
+                        new OA\Property(property: "message", type: "string", example: "Успешный выход"),
+                    ]
+                )
+            ),
+        ]
+    )]
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
@@ -84,6 +195,26 @@ class AuthController extends Controller
         ]);
     }
 
+
+    #[OA\Get(
+        path: "/api/me",
+        tags: ["Auth"],
+        summary: "Получить информацию о текущем пользователе",
+        operationId: "me",
+        security: [["bearerAuth" => []]],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Информация о пользователе",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "success", type: "boolean", example: true),
+                        new OA\Property(property: "user", ref: "#/components/schemas/User"),
+                    ]
+                )
+            ),
+        ]
+    )]
     public function me(Request $request)
     {
         return response()->json([
