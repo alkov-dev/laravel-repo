@@ -69,6 +69,12 @@
                         "content": {
                             "application/json": {
                                 "schema": {
+                                    "required": [
+                                        "success",
+                                        "message",
+                                        "user",
+                                        "token"
+                                    ],
                                     "properties": {
                                         "success": {
                                             "type": "boolean",
@@ -160,6 +166,12 @@
                         "content": {
                             "application/json": {
                                 "schema": {
+                                    "required": [
+                                        "success",
+                                        "message",
+                                        "user",
+                                        "token"
+                                    ],
                                     "properties": {
                                         "success": {
                                             "type": "boolean",
@@ -187,6 +199,10 @@
                         "content": {
                             "application/json": {
                                 "schema": {
+                                    "required": [
+                                        "success",
+                                        "message"
+                                    ],
                                     "properties": {
                                         "success": {
                                             "type": "boolean",
@@ -256,6 +272,10 @@
                         "content": {
                             "application/json": {
                                 "schema": {
+                                    "required": [
+                                        "success",
+                                        "user"
+                                    ],
                                     "properties": {
                                         "success": {
                                             "type": "boolean",
@@ -282,6 +302,14 @@
     "components": {
         "schemas": {
             "User": {
+                "required": [
+                    "id",
+                    "name",
+                    "email",
+                    "email_verified_at",
+                    "created_at",
+                    "updated_at"
+                ],
                 "properties": {
                     "id": {
                         "type": "integer",

@@ -34,6 +34,7 @@ class AuthController extends Controller
                 response: 201,
                 description: "Пользователь зарегистрирован",
                 content: new OA\JsonContent(
+                    required: ["success", "message", "user", "token"],
                     properties: [
                         new OA\Property(property: "success", type: "boolean", example: true),
                         new OA\Property(property: "message", type: "string", example: "Пользователь зарегистрирован"),
@@ -112,6 +113,7 @@ class AuthController extends Controller
                 response: 200,
                 description: "Успешный вход",
                 content: new OA\JsonContent(
+                    required: ["success", "message", "user", "token"],
                     properties: [
                         new OA\Property(property: "success", type: "boolean", example: true),
                         new OA\Property(property: "message", type: "string", example: "Успешный вход"),
@@ -124,6 +126,7 @@ class AuthController extends Controller
                 response: 401,
                 description: "Неверный email или пароль",
                 content: new OA\JsonContent(
+                    required: ["success", "message"],
                     properties: [
                         new OA\Property(property: "success", type: "boolean", example: false),
                         new OA\Property(property: "errors", type: "object", example: [
@@ -207,6 +210,7 @@ class AuthController extends Controller
                 response: 200,
                 description: "Информация о пользователе",
                 content: new OA\JsonContent(
+                    required: ["success", "user"],
                     properties: [
                         new OA\Property(property: "success", type: "boolean", example: true),
                         new OA\Property(property: "user", ref: "#/components/schemas/User"),
